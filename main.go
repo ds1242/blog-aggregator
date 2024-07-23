@@ -10,8 +10,11 @@ import (
 
 func main() {
 	godotenv.Load()
+
 	port := os.Getenv("PORT")
-	const filepathRoot = "."
+	if port == "" {
+		log.Fatal("PORT environment variable is not set")
+	}
 
 	mux := http.NewServeMux()
 
@@ -23,6 +26,6 @@ func main() {
 		Handler: mux,
 	}
 
-	log.Printf("Serving files from %s on PORT: %s\n", filepathRoot, port)
+	log.Printf("Serving on port: %s\n", port)
 	log.Fatal(srv.ListenAndServe())
 }
