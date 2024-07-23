@@ -8,6 +8,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+import _ "github.com/lib/pq"
+
 func main() {
 	godotenv.Load()
 
