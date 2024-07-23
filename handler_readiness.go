@@ -2,11 +2,16 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/ds1242/blog-aggregator.git/helpers"
 )
 
 
 func healthzHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("OK"))	
+	type statusOKStruct struct {
+		Status string `json:"status"`
+	}
+	helpers.RespondWithJSON(w, http.StatusOK, statusOKStruct{
+		Status: "ok",
+	})	
 }

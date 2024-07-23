@@ -1,9 +1,11 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/ds1242/blog-aggregator.git/helpers"
+)
 
 func errorHealthHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Internal Server Error"))
+	helpers.ResponseWithError(w, http.StatusInternalServerError, "Internal Server Error")
 }
