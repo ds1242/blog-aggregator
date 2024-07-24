@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
@@ -37,8 +38,23 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		ResponseWithError(w, http.StatusInternalServerError, "Couldn't create user")
 		return
 	}
-	
-
 	RespondWithJSON(w, http.StatusCreated, newUser)
+}
 
+
+func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "ApiKey ") {
+		ResponseWithError(w, http.StatusUnauthorized, "not authorized")
+		return
+	}
+
+	userApiKey := strings.TrimPrefix(authHeader, "ApiKey ")
+
+	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), userApiKey)
+	if err != nil {
+		ResponseWithError(w, http.StatusInternalServerError, "could not find user")
+		return
+	}
+	RespondWithJSON(w, http.StatusOK, userInfo)
 }
