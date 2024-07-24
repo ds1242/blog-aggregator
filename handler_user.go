@@ -23,7 +23,7 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		ResponseWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
 		return
 	}
-	
+
 	// Get the context from the request
 	ctx := r.Context()
 
