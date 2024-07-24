@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
+	"github.com/ds1242/blog-aggregator.git/auth"
 	"github.com/google/uuid"
 )
 
@@ -43,15 +43,13 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 
 
 func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	if !strings.HasPrefix(authHeader, "ApiKey ") {
-		ResponseWithError(w, http.StatusUnauthorized, "not authorized")
+	apiKey, err := auth.GetAPIKey(r.Header)
+	if err != nil{
+		ResponseWithError(w, http.StatusUnauthorized, "could not find api key")
 		return
 	}
 
-	userApiKey := strings.TrimPrefix(authHeader, "ApiKey ")
-
-	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), userApiKey)
+	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), apiKey)
 	if err != nil {
 		ResponseWithError(w, http.StatusInternalServerError, "could not find user")
 		return
