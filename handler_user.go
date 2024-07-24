@@ -56,5 +56,5 @@ func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
 		ResponseWithError(w, http.StatusInternalServerError, "could not find user")
 		return
 	}
-	RespondWithJSON(w, http.StatusOK, userInfo)
+	RespondWithJSON(w, http.StatusOK, databaseUserToUser(userInfo))
 }
