@@ -20,25 +20,21 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 	
 	err := decoder.Decode(&params)
 	if err != nil {
-		ResponseWithError(w, http.StatusBadRequest, "invalid request payload")
+		ResponseWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
 		return
 	}
-	// Generate a new UUID for the user's ID
-    id := uuid.New()
-
-    // Get the current time for `created_at` and `updated_at`
-    now := time.Now()
+	
 	// Get the context from the request
 	ctx := r.Context()
 
 	newUser, err := cfg.DB.CreateUser(ctx, database.CreateUserParams{
-		ID: 		id,
-		CreatedAt: 	now,
-		UpdatedAt: 	now,
+		ID: 		uuid.New(),
+		CreatedAt: 	time.Now().UTC(),
+		UpdatedAt: 	time.Now().UTC(),
 		Name: 		params.Name,
 	})
 	if err != nil {
-		ResponseWithError(w, http.StatusInternalServerError, "internal server error")
+		ResponseWithError(w, http.StatusInternalServerError, "Couldn't create user")
 		return
 	}
 	
