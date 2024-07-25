@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
+	"github.com/ds1242/blog-aggregator.git/auth"
 	"github.com/google/uuid"
 )
 
@@ -23,7 +24,7 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		ResponseWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
 		return
 	}
-	
+
 	// Get the context from the request
 	ctx := r.Context()
 
@@ -37,8 +38,21 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		ResponseWithError(w, http.StatusInternalServerError, "Couldn't create user")
 		return
 	}
-	
-
 	RespondWithJSON(w, http.StatusCreated, newUser)
+}
 
+
+func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
+	apiKey, err := auth.GetAPIKey(r.Header)
+	if err != nil{
+		ResponseWithError(w, http.StatusUnauthorized, "could not find api key")
+		return
+	}
+
+	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), apiKey)
+	if err != nil {
+		ResponseWithError(w, http.StatusInternalServerError, "could not find user")
+		return
+	}
+	RespondWithJSON(w, http.StatusOK, databaseUserToUser(userInfo))
 }
