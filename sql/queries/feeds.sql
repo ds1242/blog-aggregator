@@ -1,7 +1,6 @@
 -- name: GetFeeds :many
 SELECT *
-FROM feeds
-ORDER BY updated_at;
+FROM feeds;
 
 
 -- name: AddToFeed :one

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 	"github.com/google/uuid"
+	// "fmt"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
 )
@@ -43,4 +44,17 @@ func (cfg *apiConfig) handlerFeedsCreate(w http.ResponseWriter, r *http.Request,
 	}
 
 	RespondWithJSON(w, http.StatusOK, databaseFeedToFeed(feed))
+}
+
+func (cfg *apiConfig) handlerGetAllFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := cfg.DB.GetFeeds(r.Context())
+	if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, "cound not get feeds")
+		return
+	}
+	var feedSlice []Feed
+	for _, feed := range(feeds) {
+		feedSlice = append(feedSlice, databaseFeedToFeed(feed))
+	}
+	RespondWithJSON(w, http.StatusOK, feedSlice)
 }
