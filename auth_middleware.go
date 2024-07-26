@@ -4,10 +4,11 @@ import (
 	"net/http"
 
 	"github.com/ds1242/blog-aggregator.git/auth"
-	"github.com/ds1242/blog-aggregator.git/database"
+	"github.com/ds1242/blog-aggregator.git/internal/database"
+
 )
 
-// type authedHandler func(http.ResponseWriter, *http.Request, database.User)
+type authedHandler func(http.ResponseWriter, *http.Request, database.User)
 
 func (cfg *apiConfig) middlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
