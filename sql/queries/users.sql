@@ -4,7 +4,7 @@ VALUES ($1, $2, $3, $4, encode(sha256(random()::text::bytea), 'hex'))
 RETURNING *;
 
 
--- name: GetUseByAPIKey :one
+-- name: GetUserByAPIKey :one
 SELECT *
 FROM users
 WHERE apikey = $1;

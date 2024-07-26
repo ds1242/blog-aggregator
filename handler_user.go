@@ -38,21 +38,10 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		RespondWithError(w, http.StatusInternalServerError, "Couldn't create user")
 		return
 	}
-	RespondWithJSON(w, http.StatusCreated, newUser)
+	RespondWithJSON(w, http.StatusCreated, databaseUserToUser(newUser))
 }
 
 
-func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
-	apiKey, err := auth.GetAPIKey(r.Header)
-	if err != nil{
-		RespondWithError(w, http.StatusUnauthorized, "could not find api key")
-		return
-	}
-
-	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "could not find user")
-		return
-	}
-	RespondWithJSON(w, http.StatusOK, databaseUserToUser(userInfo))
+func (cfg *apiConfig) handlerUsersGet(w http.ResponseWriter, r *http.Request, user database.User) {
+	RespondWithJSON(w, http.StatusOK, databaseUserToUser(user))
 }

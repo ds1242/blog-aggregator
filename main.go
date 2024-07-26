@@ -47,7 +47,7 @@ func main() {
 	mux.HandleFunc("GET /v1/err", errorHealthHandler)
 
 	mux.HandleFunc("POST /v1/users", cfg.createUserHandler)
-	mux.HandleFunc("GET /v1/users", cfg.getCurrentUser)
+	mux.HandleFunc("GET /v1/users", cfg.middlewareAuth(cfg.getCurrentUser))
 
 	srv := &http.Server{
 		Addr: ":" + port,
