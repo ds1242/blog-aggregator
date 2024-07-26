@@ -48,8 +48,8 @@ func main() {
 
 	mux.HandleFunc("POST /v1/users", cfg.handlerUsersCreate)
 	mux.HandleFunc("GET /v1/users", cfg.middlewareAuth(cfg.handlerUsersGet))
-	
-	mux.HandleFunc("POST /v1/feeds", cfg.middlewareAuth(cfg.handlerUsersGet))
+
+	mux.HandleFunc("POST /v1/feeds", cfg.middlewareAuth(cfg.handlerFeedsCreate))
 
 	srv := &http.Server{
 		Addr: ":" + port,
