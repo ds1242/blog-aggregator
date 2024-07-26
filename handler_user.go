@@ -11,7 +11,7 @@ import (
 )
 
 
-func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
 	type Params struct {
 		Name string `json:"name"`
 	}
