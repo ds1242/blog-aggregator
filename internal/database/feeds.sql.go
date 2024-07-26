@@ -7,7 +7,46 @@ package database
 
 import (
 	"context"
+	"time"
+
+	"github.com/google/uuid"
 )
+
+const addToFeed = `-- name: AddToFeed :one
+INSERT INTO feeds(id, created_at, updated_at, name, url, user_id)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, created_at, updated_at, name, url, user_id
+`
+
+type AddToFeedParams struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Name      string
+	Url       string
+	UserID    uuid.UUID
+}
+
+func (q *Queries) AddToFeed(ctx context.Context, arg AddToFeedParams) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, addToFeed,
+		arg.ID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.Name,
+		arg.Url,
+		arg.UserID,
+	)
+	var i Feed
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.Url,
+		&i.UserID,
+	)
+	return i, err
+}
 
 const getFeeds = `-- name: GetFeeds :one
 SELECT id, created_at, updated_at, name, url, user_id
