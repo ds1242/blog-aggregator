@@ -10,7 +10,7 @@ func healthzHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func errorHealthHandler(w http.ResponseWriter, r *http.Request) {
-	ResponseWithError(w, http.StatusInternalServerError, "Internal Server Error")
+	RespondWithError(w, http.StatusInternalServerError, "Internal Server Error")
 }
 
 

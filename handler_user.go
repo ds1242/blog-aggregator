@@ -21,7 +21,7 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 	
 	err := decoder.Decode(&params)
 	if err != nil {
-		ResponseWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
+		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
 		return
 	}
 
@@ -35,7 +35,7 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		Name: 		params.Name,
 	})
 	if err != nil {
-		ResponseWithError(w, http.StatusInternalServerError, "Couldn't create user")
+		RespondWithError(w, http.StatusInternalServerError, "Couldn't create user")
 		return
 	}
 	RespondWithJSON(w, http.StatusCreated, newUser)
@@ -45,13 +45,13 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 func (cfg *apiConfig) getCurrentUser(w http.ResponseWriter, r *http.Request) {
 	apiKey, err := auth.GetAPIKey(r.Header)
 	if err != nil{
-		ResponseWithError(w, http.StatusUnauthorized, "could not find api key")
+		RespondWithError(w, http.StatusUnauthorized, "could not find api key")
 		return
 	}
 
 	userInfo, err := cfg.DB.GetUseByAPIKey(r.Context(), apiKey)
 	if err != nil {
-		ResponseWithError(w, http.StatusInternalServerError, "could not find user")
+		RespondWithError(w, http.StatusInternalServerError, "could not find user")
 		return
 	}
 	RespondWithJSON(w, http.StatusOK, databaseUserToUser(userInfo))
