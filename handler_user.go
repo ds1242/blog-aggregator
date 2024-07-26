@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
-	"github.com/ds1242/blog-aggregator.git/auth"
 	"github.com/google/uuid"
 )
 
