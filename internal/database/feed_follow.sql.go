@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const feedFollow = `-- name: FeedFollow :many
+const feedFollow = `-- name: FeedFollow :one
 INSERT INTO feed_users(id, created_at, updated_at, feed_id, user_id)
 VALUES ($1, $2, $3, $4, $5)
 RETURNING id, created_at, updated_at, feed_id, user_id
@@ -26,37 +26,21 @@ type FeedFollowParams struct {
 	UserID    uuid.UUID
 }
 
-func (q *Queries) FeedFollow(ctx context.Context, arg FeedFollowParams) ([]FeedUser, error) {
-	rows, err := q.db.QueryContext(ctx, feedFollow,
+func (q *Queries) FeedFollow(ctx context.Context, arg FeedFollowParams) (FeedUser, error) {
+	row := q.db.QueryRowContext(ctx, feedFollow,
 		arg.ID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.FeedID,
 		arg.UserID,
 	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []FeedUser
-	for rows.Next() {
-		var i FeedUser
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.FeedID,
-			&i.UserID,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	var i FeedUser
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.FeedID,
+		&i.UserID,
+	)
+	return i, err
 }
