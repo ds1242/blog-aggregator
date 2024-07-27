@@ -76,6 +76,9 @@ func (cfg *apiConfig) handlerGetUserFeed(w http.ResponseWriter, r * http.Request
 	for _, feedItem := range userFeed {
 		userFeedFollow = append(userFeedFollow, databaseFeedFollowToFeedFollow(feedItem))
 	}
-
+	if len(userFeedFollow) == 0 {
+		RespondWithJSON(w, http.StatusOK, "user not following any feeds")
+		return
+	}
 	RespondWithJSON(w, http.StatusOK, userFeedFollow)
 }
