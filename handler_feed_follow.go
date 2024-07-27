@@ -46,9 +46,9 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 }
 
 func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request) {
-	
+	// TODO: Does this need to throw an error if no record exists?
 	feedFollowId:= r.PathValue("feedFollowID")
-	
+
 	feedIdUUID, err := uuid.Parse(feedFollowId)
 	
 	if err != nil {
@@ -62,5 +62,5 @@ func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	RespondWithJSON(w, http.StatusNoContent, "deleted")
+	RespondWithJSON(w, http.StatusOK, "deleted")
 }
