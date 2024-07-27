@@ -46,28 +46,20 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 }
 
 func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request) {
-	type Params struct {
-		FeedFollowID string `json:"feed_follow_id"`
-	}
 	
-	decoder := json.NewDecoder(r.Body)
-	params := Params{}
+	feedFollowId:= r.PathValue("feedFollowID")
 	
-	err := decoder.Decode(&params)
+	feedIdUUID, err := uuid.Parse(feedFollowId)
+	
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
-		return
-	}
-
-	feedIdUUID, err := uuid.Parse(params.FeedFollowID)
-	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "could not decode feed id")
+		RespondWithError(w, http.StatusBadRequest, "bad feed follow id")
 		return 
 	}
 
 	unfollowErr := cfg.DB.UnfollowFeed(r.Context(), feedIdUUID)
 	if unfollowErr != nil {
 		RespondWithError(w, http.StatusBadRequest, "unable to unfollow that feed")
+		return
 	}
 
 	RespondWithJSON(w, http.StatusNoContent, "deleted")
