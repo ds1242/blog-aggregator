@@ -60,37 +60,3 @@ func (cfg *apiConfig) handlerGetAllFeeds(w http.ResponseWriter, r *http.Request)
 }
 
 
-func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
-	type Params struct {
-		Feed string `json:"feed_id"`
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	params := Params{}
-	
-	err := decoder.Decode(&params)
-	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
-		return
-	}
-
-	feedIdUUID, err := uuid.Parse(params.Feed)
-	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "could not decode feed id")
-		return 
-	}
-
-	followFeed, err := cfg.DB.FeedFollow(r.Context(), database.FeedFollowParams{
-		ID: 		uuid.New(),
-		CreatedAt: 	time.Now().UTC(),
-		UpdatedAt: 	time.Now().UTC(),
-		FeedID: 	feedIdUUID,
-		UserID: 	user.ID,
-	})
-	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "could not follow feed")
-		return
-	}
-
-	RespondWithJSON(w, http.StatusOK, databaseFeedFollowToFeedFollow(followFeed))
-}

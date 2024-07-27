@@ -5,4 +5,4 @@ RETURNING *;
 
 -- name: UnfollowFeed :exec
 DELETE FROM feed_users
-WHERE feed_id = $1;
+WHERE id = $1;
