@@ -65,3 +65,8 @@ func databaseFeedFollowToFeedFollow(feedFollow database.FeedUser) FeedFollow {
 		UserID: 	feedFollow.UserID,
 	}
 }
+
+type FeedAndFeedFollow struct {
+	Feed Feed `json:"feed"`
+	FeedFollow FeedFollow `json:"feed_follow"`
+}
