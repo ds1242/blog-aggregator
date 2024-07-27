@@ -45,8 +45,7 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 	RespondWithJSON(w, http.StatusOK, databaseFeedFollowToFeedFollow(followFeed))
 }
 
-func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request) {
-	// TODO: Does this need to throw an error if no record exists?
+func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedFollowId:= r.PathValue("feedFollowID")
 
 	feedIdUUID, err := uuid.Parse(feedFollowId)
@@ -56,13 +55,16 @@ func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Req
 		return 
 	}
 
-	unfollowErr := cfg.DB.UnfollowFeed(r.Context(), feedIdUUID)
+	unfollowErr := cfg.DB.UnfollowFeed(r.Context(), database.UnfollowFeedParams{
+		ID: feedIdUUID,
+		UserID: user.ID,
+	})
 	if unfollowErr != nil {
-		RespondWithError(w, http.StatusBadRequest, "unable to unfollow that feed")
+		RespondWithError(w, http.StatusBadRequest, "unable to delete follow of that feed")
 		return
 	}
 
-	RespondWithJSON(w, http.StatusOK, "deleted")
+	RespondWithJSON(w, http.StatusOK, struct{}{})
 }
 
 

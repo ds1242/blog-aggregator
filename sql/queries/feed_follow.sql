@@ -5,7 +5,8 @@ RETURNING *;
 
 -- name: UnfollowFeed :exec
 DELETE FROM feed_users
-WHERE id = $1;
+WHERE id = $1
+AND user_id = $2;
 
 -- name: GetUserFeed :many
 SELECT * 

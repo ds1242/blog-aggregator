@@ -83,9 +83,15 @@ func (q *Queries) GetUserFeed(ctx context.Context, userID uuid.UUID) ([]FeedUser
 const unfollowFeed = `-- name: UnfollowFeed :exec
 DELETE FROM feed_users
 WHERE id = $1
+AND user_id = $2
 `
 
-func (q *Queries) UnfollowFeed(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, unfollowFeed, id)
+type UnfollowFeedParams struct {
+	ID     uuid.UUID
+	UserID uuid.UUID
+}
+
+func (q *Queries) UnfollowFeed(ctx context.Context, arg UnfollowFeedParams) error {
+	_, err := q.db.ExecContext(ctx, unfollowFeed, arg.ID, arg.UserID)
 	return err
 }
