@@ -44,3 +44,13 @@ func (q *Queries) FeedFollow(ctx context.Context, arg FeedFollowParams) (FeedUse
 	)
 	return i, err
 }
+
+const unfollowFeed = `-- name: UnfollowFeed :exec
+DELETE FROM feed_users
+WHERE feed_id = $1
+`
+
+func (q *Queries) UnfollowFeed(ctx context.Context, feedID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, unfollowFeed, feedID)
+	return err
+}
