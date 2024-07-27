@@ -74,9 +74,9 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	userIdUUID, err := uuid.Parse(params.Feed)
+	feedIdUUID, err := uuid.Parse(params.Feed)
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "could not decode user id")
+		RespondWithError(w, http.StatusBadRequest, "could not decode feed id")
 		return 
 	}
 
@@ -84,7 +84,7 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 		ID: 		uuid.New(),
 		CreatedAt: 	time.Now().UTC(),
 		UpdatedAt: 	time.Now().UTC(),
-		FeedID: 	userIdUUID,
+		FeedID: 	feedIdUUID,
 		UserID: 	user.ID,
 	})
 	if err != nil {
