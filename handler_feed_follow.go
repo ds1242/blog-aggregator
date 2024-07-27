@@ -64,3 +64,18 @@ func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Req
 
 	RespondWithJSON(w, http.StatusOK, "deleted")
 }
+
+
+func (cfg *apiConfig) handlerGetUserFeed(w http.ResponseWriter, r * http.Request, user database.User) {
+	userFeed, err := cfg.DB.GetUserFeed(r.Context(), user.ID)
+	if err != nil {
+		RespondWithError(w, http.StatusBadRequest, "unable to get user feed")
+	}
+
+	var userFeedFollow []FeedFollow
+	for _, feedItem := range userFeed {
+		userFeedFollow = append(userFeedFollow, databaseFeedFollowToFeedFollow(feedItem))
+	}
+
+	RespondWithJSON(w, http.StatusOK, userFeedFollow)
+}
