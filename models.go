@@ -27,15 +27,17 @@ func databaseUserToUser(user database.User) User {
 
 
 type Feed struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time	`json:"created_at"`
-	UpdatedAt time.Time	`json:"updated_at"`
-	Name      string	`json:"name"`
-	Url       string	`json:"url"`
-	UserID    uuid.UUID	`json:"user_id"`
+	ID        uuid.UUID 	`json:"id"`
+	CreatedAt time.Time		`json:"created_at"`
+	UpdatedAt time.Time		`json:"updated_at"`
+	Name      string		`json:"name"`
+	Url       string		`json:"url"`
+	UserID    uuid.UUID		`json:"user_id"`
+	LastFetch *time.Time	`json:"last_fetched_at"`
 }
 
 func databaseFeedToFeed(feed database.Feed) Feed {
+	// TODO: add a check for nil, either assign value to *time.Time
 	return Feed {
 		ID: 		feed.ID,
 		CreatedAt: 	feed.CreatedAt,
@@ -43,6 +45,7 @@ func databaseFeedToFeed(feed database.Feed) Feed {
 		UserID:		feed.UserID,
 		Name:		feed.Name,
 		Url: 		feed.Url,
+		LastFetch: 	feed.LastFetchedAt,
 	}
 }
 
