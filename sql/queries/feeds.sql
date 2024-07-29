@@ -11,5 +11,5 @@ RETURNING *;
 -- name: GetFeedsToFetch :many
 SELECT *
 FROM feeds
-ORDER BY last_fetched_at
+ORDER BY last_fetched_at IS NULL, last_fetched_at ASC
 LIMIT $1;

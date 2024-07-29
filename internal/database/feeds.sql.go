@@ -88,7 +88,7 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
 const getFeedsToFetch = `-- name: GetFeedsToFetch :many
 SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at
 FROM feeds
-ORDER BY last_fetched_at
+ORDER BY last_fetched_at IS NULL, last_fetched_at ASC
 LIMIT $1
 `
 
