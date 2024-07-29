@@ -6,20 +6,6 @@ import (
 	"io"
 )
 
-type RSS struct {
-	Channel Channel `xml:"channel"`
-}
-
-type Channel struct {
-	Title 	string	`xml:"title"`
-	Items	[]Item	`xml:"item"`
-}
-
-type Item struct {
-	Title	string	`xml:"title"`
-	Link	string	`xml:"link"`
-}
-
 
 func FetchFeed(url string) (RSS, error ){
 	resp, err := http.Get(url)

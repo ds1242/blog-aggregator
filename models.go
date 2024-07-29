@@ -37,7 +37,7 @@ type Feed struct {
 }
 
 func databaseFeedToFeed(feed database.Feed) Feed {
-	
+
 	var lastFetch *time.Time
 	if feed.LastFetchedAt.Valid {
 		lastFetch = &feed.LastFetchedAt.Time
@@ -79,4 +79,19 @@ func databaseFeedFollowToFeedFollow(feedFollow database.FeedUser) FeedFollow {
 type FeedAndFeedFollow struct {
 	Feed Feed `json:"feed"`
 	FeedFollow FeedFollow `json:"feed_follow"`
+}
+
+
+type RSS struct {
+	Channel Channel `xml:"channel"`
+}
+
+type Channel struct {
+	Title 	string	`xml:"title"`
+	Items	[]Item	`xml:"item"`
+}
+
+type Item struct {
+	Title	string	`xml:"title"`
+	Link	string	`xml:"link"`
 }
