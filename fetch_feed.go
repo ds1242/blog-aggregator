@@ -7,7 +7,7 @@ import (
 )
 
 
-func FetchFeed(url string) (RSS, error ){
+func FetchRSSFeed(url string) (RSS, error ){
 	resp, err := http.Get(url)
 	if err != nil {
 		return RSS{}, err

@@ -6,7 +6,7 @@ import (
 
 func TestFetchFeed(t *testing.T) {
 	pageURL := "https://blog.boot.dev/index.xml"
-	rssFeed, err := FetchFeed(pageURL)
+	rssFeed, err := FetchRSSFeed(pageURL)
 	if err != nil {
 		t.Fatalf("failed to fetch: %v", err)
 		return
