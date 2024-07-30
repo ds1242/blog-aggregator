@@ -1,28 +1,53 @@
 package main
 
 import (
-	// "sync"
+	"context"
+	"log"
+	"sync"
 	"time"
-	"fmt"
+
+	"github.com/ds1242/blog-aggregator.git/internal/database"
 )
 
 
-func FetchFeedFromDB(numberOfFeeds int) {
-	ticker := time.NewTicker(time.Second)
-	defer ticker.Stop()
-	done := make(chan bool)
-	go func() {
-		time.Sleep(60 * time.Second)
-		done <- true
-	}()
-	for {
-		select {
-		case <-done:
-			fmt.Println("Done!")
-			return
-		case t := <-ticker.C:
-			fmt.Println("Current time: ", t)
+func startScraping(db *database.Queries, concurrency int, timeBetweenRequest time.Duration) {
+	log.Printf("Collecting feeds every %s on %v goroutines...", timeBetweenRequest, concurrency)
+	ticker := time.NewTicker(timeBetweenRequest)
+
+	for ; ; <-ticker.C {
+		feeds, err := db.GetNextFeedsToFetch(context.Background(), int32(concurrency))
+		if err != nil {
+			log.Println("Couldn't get next feeds to fetch", err)
+			continue
 		}
+		log.Printf("found %v feeds to fetch!", len(feeds))
+		wg := &sync.WaitGroup{}
+		for _, feed := range feeds {
+			wg.Add(1)
+			go scrapeFeed(db, wg, feed)
+		}
+		wg.Wait()
 	}
+}
+
+
+func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
+	defer wg.Done()
+	_, err := db.MarkFeedFetched(context.Background(), feed.ID)
+	if err != nil {
+		log.Printf("Couldn't mark feed %s fetched: %v", feed.Name, err)
+		return
+	}
+
+	feedData, err :=  fetchRSSFeed(feed.Url)
+	if err != nil {
+		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
+		return
+	}
+	for _, item := range feedData.Channel.Item {
+		log.Println("Found post", item.Title)
+	}
+	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
+
 }
 

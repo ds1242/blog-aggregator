@@ -1,16 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
-	"database/sql"
-	
-	"github.com/joho/godotenv"
-	"github.com/ds1242/blog-aggregator.git/internal/database"
-)
+	"time"
 
-import _ "github.com/lib/pq"
+	"github.com/ds1242/blog-aggregator.git/internal/database"
+	"github.com/joho/godotenv"
+
+	_ "github.com/lib/pq"
+)
 
 
 type apiConfig struct {
@@ -61,6 +62,11 @@ func main() {
 		Handler: mux,
 	}
 
+	const collectionConcurrency = 10
+	const collectionInterval = time.Minute
+	go startScraping(dbQueries, collectionConcurrency, collectionInterval)
+	
 	log.Printf("Serving on port: %s\n", port)
 	log.Fatal(srv.ListenAndServe())
+
 }

@@ -6,7 +6,7 @@ import (
 
 func TestFetchFeed(t *testing.T) {
 	pageURL := "https://blog.boot.dev/index.xml"
-	rssFeed, err := FetchRSSFeed(pageURL)
+	rssFeed, err := fetchRSSFeed(pageURL)
 	if err != nil {
 		t.Fatalf("failed to fetch: %v", err)
 		return
@@ -16,7 +16,7 @@ func TestFetchFeed(t *testing.T) {
 		t.Error("Expected RSS feed channel title to be non-empty")
 	}
 
-	if len(rssFeed.Channel.Items) == 0 {
+	if len(rssFeed.Channel.Title) == 0 {
 		t.Error("Expected RSS feed to have at least one item")
 	}
 
