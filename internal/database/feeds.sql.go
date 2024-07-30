@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -86,15 +85,15 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]Feed, error) {
 	return items, nil
 }
 
-const getFeedsToFetch = `-- name: GetFeedsToFetch :many
+const getNextFeedsToFetch = `-- name: GetNextFeedsToFetch :many
 SELECT id, created_at, updated_at, name, url, user_id, last_fetched_at
 FROM feeds
-ORDER BY last_fetched_at IS NULL, last_fetched_at ASC
+ORDER BY last_fetched_at ASC NULLS FIRST
 LIMIT $1
 `
 
-func (q *Queries) GetFeedsToFetch(ctx context.Context, limit int32) ([]Feed, error) {
-	rows, err := q.db.QueryContext(ctx, getFeedsToFetch, limit)
+func (q *Queries) GetNextFeedsToFetch(ctx context.Context, limit int32) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, getNextFeedsToFetch, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -126,19 +125,14 @@ func (q *Queries) GetFeedsToFetch(ctx context.Context, limit int32) ([]Feed, err
 
 const markFeedFetched = `-- name: MarkFeedFetched :one
 UPDATE feeds
-SET updated_at = $2, last_fetched_at = $3 
+SET last_fetched_at = NOW(),
+updated_at = NOW()
 WHERE id = $1
 RETURNING id, created_at, updated_at, name, url, user_id, last_fetched_at
 `
 
-type MarkFeedFetchedParams struct {
-	ID            uuid.UUID
-	UpdatedAt     time.Time
-	LastFetchedAt sql.NullTime
-}
-
-func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) (Feed, error) {
-	row := q.db.QueryRowContext(ctx, markFeedFetched, arg.ID, arg.UpdatedAt, arg.LastFetchedAt)
+func (q *Queries) MarkFeedFetched(ctx context.Context, id uuid.UUID) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, markFeedFetched, id)
 	var i Feed
 	err := row.Scan(
 		&i.ID,

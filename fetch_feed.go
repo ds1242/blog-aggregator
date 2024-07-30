@@ -7,24 +7,24 @@ import (
 )
 
 
-func FetchFeed(url string) (RSS, error ){
+func fetchRSSFeed(url string) (*RSSFeed, error ){
 	resp, err := http.Get(url)
 	if err != nil {
-		return RSS{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	// // Read the response body
     body, err := io.ReadAll(resp.Body)
     if err != nil {
-        return RSS{}, err
+        return nil, err
     }
 	// Parse the XML
-    var rss RSS
+    var rss RSSFeed
     err = xml.Unmarshal(body, &rss)
     if err != nil {
-        return RSS{}, err
+        return nil, err
     }
 
-    return rss, nil
+    return &rss, nil
 
 }
