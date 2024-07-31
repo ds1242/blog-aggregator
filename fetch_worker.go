@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"sync"
 	"time"
@@ -46,16 +47,38 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		return
 	}
 	for _, item := range feedData.Channel.Item {
-		// TODO: convert publised_at to a consistent format before adding to params
-		// TODO: ensure description is a nullable value before adding
+		
+		var descriptionNullable sql.NullString
+
+		if item.Description != "" {
+			descriptionNullable.String = item.Description
+			descriptionNullable.Valid = true
+		} else {
+			descriptionNullable.Valid = false
+		}
+
+		timeConverted, err := time.Parse(item.PubDate, item.PubDate)
+		if err != nil {
+			log.Printf("Could not parse time: %s", err)
+			return
+		}
+		var publishedAtNullable sql.NullTime
+
+		if !timeConverted.IsZero() {
+			publishedAtNullable.Time = timeConverted
+			publishedAtNullable.Valid = true
+		} else {
+			publishedAtNullable.Valid = false
+		}
+
 		db.AddPost(context.Background(), database.AddPostParams{
 			ID: 			uuid.New(),
 			CreatedAt: 		time.Now().UTC(),
 			UpdatedAt: 		time.Now().UTC(),
 			Title: 			item.Title,
 			Url: 			item.Link,
-			Description: 	item.Description,	
-			PublishedAt: 	item.PubDate,
+			Description: 	descriptionNullable,	
+			PublishedAt: 	publishedAtNullable,
 			FeedID: 		feed.ID,	
 		})
 	}
