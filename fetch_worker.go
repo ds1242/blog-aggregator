@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
+	"github.com/google/uuid"
 )
 
 
@@ -45,7 +46,18 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		return
 	}
 	for _, item := range feedData.Channel.Item {
-		log.Println("Found post", item.Title)
+		// TODO: convert publised_at to a consistent format before adding to params
+		// TODO: ensure description is a nullable value before adding
+		db.AddPost(context.Background(), database.AddPostParams{
+			ID: 			uuid.New(),
+			CreatedAt: 		time.Now().UTC(),
+			UpdatedAt: 		time.Now().UTC(),
+			Title: 			item.Title,
+			Url: 			item.Link,
+			Description: 	item.Description,	
+			PublishedAt: 	item.PubDate,
+			FeedID: 		feed.ID,	
+		})
 	}
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 
