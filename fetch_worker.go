@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	// "fmt"
 	"log"
 	"sync"
 	"time"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
+	"github.com/google/uuid"
 )
 
 
@@ -44,10 +47,57 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
 		return
 	}
-	for _, item := range feedData.Channel.Item {
-		log.Println("Found post", item.Title)
-	}
+	
+	
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 
-}
+	for _, item := range feedData.Channel.Item {
 
+		var descriptionNullable sql.NullString
+
+		if item.Description != "" {
+			descriptionNullable.String = item.Description
+			descriptionNullable.Valid = true
+		} else {
+			descriptionNullable.Valid = false
+		}
+
+		// List of potential layouts
+		layouts := []string{
+			time.RFC3339,
+			time.UnixDate,
+			// Add custom layouts as needed
+		}
+
+		var timeConverted time.Time
+		var err error
+
+		// Attempt parsing with each layout
+		for _, layout := range layouts {
+			timeConverted, err = time.Parse(layout, item.PubDate)
+			if err == nil {
+				break
+			}
+		}
+		var publishedAtNullable sql.NullTime
+
+		if !timeConverted.IsZero() {
+			publishedAtNullable.Time = timeConverted.UTC()
+			publishedAtNullable.Valid = true
+		} else {
+			publishedAtNullable.Valid = false
+		}
+
+		db.AddPost(context.Background(), database.AddPostParams{
+			ID: 			uuid.New(),
+			CreatedAt: 		time.Now().UTC(),
+			UpdatedAt: 		time.Now().UTC(),
+			Title: 			item.Title,
+			Url: 			item.Link,
+			Description: 	descriptionNullable,	
+			PublishedAt: 	publishedAtNullable,
+			FeedID: 		feed.ID,	
+		})
+	}
+
+}

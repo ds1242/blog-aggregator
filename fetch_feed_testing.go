@@ -21,6 +21,6 @@ func TestFetchFeed(t *testing.T) {
 	}
 
 	// Optional: Print the RSS feed for debugging; not usually recommended in actual tests
-	t.Logf("Fetched RSS feed: %+v", rssFeed)
+	t.Logf("Fetched RSS feed: %v", rssFeed)
 
 }
