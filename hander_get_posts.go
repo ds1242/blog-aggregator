@@ -2,11 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
-	"github.com/google/uuid"
 )
 
 func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, user database.User) {
@@ -23,12 +22,6 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		return
 	}
 
-	type PostsParams struct {
-		UserID 	uuid.UUID
-		Limit 	int32
-		Offset	int32
-	}
-
 	posts, err := cfg.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
 		UserID: user.ID,
 		Limit: 	params.Limit,
@@ -39,7 +32,6 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		return
 	}
 	fmt.Println(posts)
-	
 	RespondWithJSON(w, http.StatusOK, posts) 
 }
 

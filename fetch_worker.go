@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -46,8 +47,12 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
 		return
 	}
+	
+	
+	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
+
 	for _, item := range feedData.Channel.Item {
-		
+
 		var descriptionNullable sql.NullString
 
 		if item.Description != "" {
@@ -57,15 +62,27 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			descriptionNullable.Valid = false
 		}
 
-		timeConverted, err := time.Parse(item.PubDate, item.PubDate)
-		if err != nil {
-			log.Printf("Could not parse time: %s", err)
-			return
+		// List of potential layouts
+		layouts := []string{
+			time.RFC3339,
+			time.UnixDate,
+			// Add custom layouts as needed
+		}
+
+		var timeConverted time.Time
+		var err error
+
+		// Attempt parsing with each layout
+		for _, layout := range layouts {
+			timeConverted, err = time.Parse(layout, item.PubDate)
+			if err == nil {
+				break
+			}
 		}
 		var publishedAtNullable sql.NullTime
 
 		if !timeConverted.IsZero() {
-			publishedAtNullable.Time = timeConverted
+			publishedAtNullable.Time = timeConverted.UTC()
 			publishedAtNullable.Valid = true
 		} else {
 			publishedAtNullable.Valid = false
@@ -81,8 +98,7 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			PublishedAt: 	publishedAtNullable,
 			FeedID: 		feed.ID,	
 		})
+		fmt.Printf("added post: %s\n", item.Title)
 	}
-	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 
 }
-
