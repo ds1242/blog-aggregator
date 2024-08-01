@@ -66,6 +66,7 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		layouts := []string{
 			time.RFC3339,
 			time.UnixDate,
+			time.RFC1123Z,
 			// Add custom layouts as needed
 		}
 
