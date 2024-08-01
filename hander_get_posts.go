@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
@@ -21,7 +20,7 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		RespondWithError(w, http.StatusBadRequest, "cannot decode parameters")
 		return
 	}
-
+	
 	posts, err := cfg.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
 		UserID: user.ID,
 		Limit: 	params.Limit,
@@ -31,7 +30,7 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		RespondWithError(w, http.StatusInternalServerError, "could not get posts")
 		return
 	}
-	fmt.Println(posts)
+
 	RespondWithJSON(w, http.StatusOK, posts) 
 }
 

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	// "fmt"
 	"log"
 	"sync"
 	"time"
@@ -98,7 +98,7 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			PublishedAt: 	publishedAtNullable,
 			FeedID: 		feed.ID,	
 		})
-		fmt.Printf("added post: %s\n", item.Title)
+		// fmt.Printf("added post: %s\n", item.Title)
 	}
 
 }
