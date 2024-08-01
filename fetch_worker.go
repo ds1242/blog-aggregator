@@ -98,7 +98,6 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 			PublishedAt: 	publishedAtNullable,
 			FeedID: 		feed.ID,	
 		})
-		// fmt.Printf("added post: %s\n", item.Title)
 	}
 
 }

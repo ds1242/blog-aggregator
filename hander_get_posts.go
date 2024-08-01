@@ -30,7 +30,10 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		RespondWithError(w, http.StatusInternalServerError, "could not get posts")
 		return
 	}
-
-	RespondWithJSON(w, http.StatusOK, posts) 
+	var postSlice []Post
+	for _, post := range posts {
+		postSlice = append(postSlice, databasePostToPost(post))
+	}
+	RespondWithJSON(w, http.StatusOK, postSlice) 
 }
 
