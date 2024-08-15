@@ -2,9 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
-	"github.com/google/uuid"
 	// "fmt"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
@@ -17,7 +17,7 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 
 	decoder := json.NewDecoder(r.Body)
 	params := Params{}
-	
+
 	err := decoder.Decode(&params)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
@@ -27,15 +27,15 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 	feedIdUUID, err := uuid.Parse(params.Feed)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "could not decode feed id")
-		return 
+		return
 	}
 
 	followFeed, err := cfg.DB.FeedFollow(r.Context(), database.FeedFollowParams{
-		ID: 		uuid.New(),
-		CreatedAt: 	time.Now().UTC(),
-		UpdatedAt: 	time.Now().UTC(),
-		FeedID: 	feedIdUUID,
-		UserID: 	user.ID,
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		FeedID:    feedIdUUID,
+		UserID:    user.ID,
 	})
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "could not follow feed")
@@ -46,17 +46,17 @@ func (cfg *apiConfig) handlerFeedFollow(w http.ResponseWriter, r *http.Request, 
 }
 
 func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
-	feedFollowId:= r.PathValue("feedFollowID")
+	feedFollowId := r.PathValue("feedFollowID")
 
 	feedIdUUID, err := uuid.Parse(feedFollowId)
-	
+
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "bad feed follow id")
-		return 
+		return
 	}
 
 	unfollowErr := cfg.DB.UnfollowFeed(r.Context(), database.UnfollowFeedParams{
-		ID: feedIdUUID,
+		ID:     feedIdUUID,
 		UserID: user.ID,
 	})
 	if unfollowErr != nil {
@@ -67,8 +67,7 @@ func (cfg *apiConfig) handlerDeleteFeedFollow(w http.ResponseWriter, r *http.Req
 	RespondWithJSON(w, http.StatusOK, struct{}{})
 }
 
-
-func (cfg *apiConfig) handlerGetUserFeed(w http.ResponseWriter, r * http.Request, user database.User) {
+func (cfg *apiConfig) handlerGetUserFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	userFeed, err := cfg.DB.GetUserFeed(r.Context(), user.ID)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "unable to get user feed")

@@ -13,7 +13,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-
 type apiConfig struct {
 	DB *database.Queries
 }
@@ -52,7 +51,7 @@ func main() {
 
 	mux.HandleFunc("POST /v1/feeds", cfg.middlewareAuth(cfg.handlerFeedsCreate))
 	mux.HandleFunc("GET /v1/feeds", cfg.handlerGetAllFeeds)
-	
+
 	mux.HandleFunc("POST /v1/feed_follows", cfg.middlewareAuth(cfg.handlerFeedFollow))
 	mux.HandleFunc("DELETE /v1/feed_follows/{feedFollowID}", cfg.middlewareAuth(cfg.handlerDeleteFeedFollow))
 	mux.HandleFunc("GET /v1/feed_follows", cfg.middlewareAuth(cfg.handlerGetUserFeed))
@@ -60,14 +59,14 @@ func main() {
 	mux.HandleFunc("GET /v1/posts", cfg.middlewareAuth(cfg.HandlerGetPosts))
 
 	srv := &http.Server{
-		Addr: ":" + port,
+		Addr:    ":" + port,
 		Handler: mux,
 	}
 
 	const collectionConcurrency = 10
 	const collectionInterval = time.Minute
 	go startScraping(dbQueries, collectionConcurrency, collectionInterval)
-	
+
 	log.Printf("Serving on port: %s\n", port)
 	log.Fatal(srv.ListenAndServe())
 

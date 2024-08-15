@@ -2,24 +2,23 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
-	"github.com/google/uuid"
 	// "fmt"
 
 	"github.com/ds1242/blog-aggregator.git/internal/database"
 )
 
-
 func (cfg *apiConfig) handlerFeedsCreate(w http.ResponseWriter, r *http.Request, user database.User) {
 	type Params struct {
 		Name string `json:"name"`
-		URL string 	`json:"url"`
+		URL  string `json:"url"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
 	params := Params{}
-	
+
 	err := decoder.Decode(&params)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
@@ -30,13 +29,12 @@ func (cfg *apiConfig) handlerFeedsCreate(w http.ResponseWriter, r *http.Request,
 	ctx := r.Context()
 
 	feed, err := cfg.DB.AddToFeed(ctx, database.AddToFeedParams{
-		ID: 		uuid.New(),
-		CreatedAt: 	time.Now().UTC(),
-		UpdatedAt: 	time.Now().UTC(),
-		UserID: 	user.ID,	
-		Name: 		params.Name,
-		Url: 		params.URL,
-
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		UserID:    user.ID,
+		Name:      params.Name,
+		Url:       params.URL,
 	})
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "could not create feed")
@@ -44,20 +42,19 @@ func (cfg *apiConfig) handlerFeedsCreate(w http.ResponseWriter, r *http.Request,
 	}
 
 	followFeed, err := cfg.DB.FeedFollow(r.Context(), database.FeedFollowParams{
-		ID: 		uuid.New(),
-		CreatedAt: 	time.Now().UTC(),
-		UpdatedAt: 	time.Now().UTC(),
-		FeedID: 	feed.ID,
-		UserID: 	user.ID,
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		FeedID:    feed.ID,
+		UserID:    user.ID,
 	})
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "could not follow feed")
 		return
 	}
 
-	
 	output := FeedAndFeedFollow{
-		Feed: databaseFeedToFeed(feed),
+		Feed:       databaseFeedToFeed(feed),
 		FeedFollow: databaseFeedFollowToFeedFollow(followFeed),
 	}
 
@@ -71,10 +68,8 @@ func (cfg *apiConfig) handlerGetAllFeeds(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	var feedSlice []Feed
-	for _, feed := range(feeds) {
+	for _, feed := range feeds {
 		feedSlice = append(feedSlice, databaseFeedToFeed(feed))
 	}
 	RespondWithJSON(w, http.StatusOK, feedSlice)
 }
-
-

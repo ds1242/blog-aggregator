@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
 	type Params struct {
 		Name string `json:"name"`
@@ -17,7 +16,7 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 
 	decoder := json.NewDecoder(r.Body)
 	params := Params{}
-	
+
 	err := decoder.Decode(&params)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "Couldn't decode parameters")
@@ -28,10 +27,10 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 	ctx := r.Context()
 
 	newUser, err := cfg.DB.CreateUser(ctx, database.CreateUserParams{
-		ID: 		uuid.New(),
-		CreatedAt: 	time.Now().UTC(),
-		UpdatedAt: 	time.Now().UTC(),
-		Name: 		params.Name,
+		ID:        uuid.New(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
+		Name:      params.Name,
 	})
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "Couldn't create user")
@@ -39,7 +38,6 @@ func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request)
 	}
 	RespondWithJSON(w, http.StatusCreated, databaseUserToUser(newUser))
 }
-
 
 func (cfg *apiConfig) handlerUsersGet(w http.ResponseWriter, r *http.Request, user database.User) {
 	RespondWithJSON(w, http.StatusOK, databaseUserToUser(user))

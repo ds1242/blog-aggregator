@@ -1,12 +1,10 @@
 package main
 
-
 import (
 	"encoding/json"
 	"log"
 	"net/http"
 )
-
 
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
@@ -19,7 +17,6 @@ func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	w.Write(dat)
 }
-
 
 func RespondWithError(w http.ResponseWriter, code int, msg string) {
 	if code > 499 {

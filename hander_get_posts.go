@@ -20,10 +20,10 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 		RespondWithError(w, http.StatusBadRequest, "cannot decode parameters")
 		return
 	}
-	
+
 	posts, err := cfg.DB.GetPostsByUser(r.Context(), database.GetPostsByUserParams{
 		UserID: user.ID,
-		Limit: 	params.Limit,
+		Limit:  params.Limit,
 		Offset: 0,
 	})
 	if err != nil {
@@ -34,6 +34,5 @@ func (cfg *apiConfig) HandlerGetPosts(w http.ResponseWriter, r *http.Request, us
 	for _, post := range posts {
 		postSlice = append(postSlice, databasePostToPost(post))
 	}
-	RespondWithJSON(w, http.StatusOK, postSlice) 
+	RespondWithJSON(w, http.StatusOK, postSlice)
 }
-

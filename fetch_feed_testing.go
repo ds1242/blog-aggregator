@@ -10,7 +10,7 @@ func TestFetchFeed(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to fetch: %v", err)
 		return
-	} 
+	}
 	// Perform assertions to validate the fetched RSS feed
 	if rssFeed.Channel.Title == "" {
 		t.Error("Expected RSS feed channel title to be non-empty")

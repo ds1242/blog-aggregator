@@ -25,15 +25,14 @@ func databaseUserToUser(user database.User) User {
 	}
 }
 
-
 type Feed struct {
-	ID        uuid.UUID 	`json:"id"`
-	CreatedAt time.Time		`json:"created_at"`
-	UpdatedAt time.Time		`json:"updated_at"`
-	Name      string		`json:"name"`
-	Url       string		`json:"url"`
-	UserID    uuid.UUID		`json:"user_id"`
-	LastFetch *time.Time	`json:"last_fetched_at"`
+	ID        uuid.UUID  `json:"id"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	Name      string     `json:"name"`
+	Url       string     `json:"url"`
+	UserID    uuid.UUID  `json:"user_id"`
+	LastFetch *time.Time `json:"last_fetched_at"`
 }
 
 func databaseFeedToFeed(feed database.Feed) Feed {
@@ -45,42 +44,39 @@ func databaseFeedToFeed(feed database.Feed) Feed {
 		lastFetch = nil
 	}
 
-	return Feed {
-		ID: 		feed.ID,
-		CreatedAt: 	feed.CreatedAt,
-		UpdatedAt: 	feed.UpdatedAt,
-		UserID:		feed.UserID,
-		Name:		feed.Name,
-		Url: 		feed.Url,
-		LastFetch: 	lastFetch,
+	return Feed{
+		ID:        feed.ID,
+		CreatedAt: feed.CreatedAt,
+		UpdatedAt: feed.UpdatedAt,
+		UserID:    feed.UserID,
+		Name:      feed.Name,
+		Url:       feed.Url,
+		LastFetch: lastFetch,
 	}
 }
 
-
-
 type FeedFollow struct {
-	ID			uuid.UUID 	`json:"id"`
-	FeedID		uuid.UUID	`json:"feed_id"`
-	UserID		uuid.UUID	`json:"user_id"`
-	CreatedAt	time.Time	`json:"created_at"`
-	UpdatedAt	time.Time	`json:"updated_at"`
+	ID        uuid.UUID `json:"id"`
+	FeedID    uuid.UUID `json:"feed_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func databaseFeedFollowToFeedFollow(feedFollow database.FeedUser) FeedFollow {
-	return FeedFollow {
-		ID:			feedFollow.ID,
-		CreatedAt: 	feedFollow.CreatedAt,
-		UpdatedAt:	feedFollow.UpdatedAt,
-		FeedID: 	feedFollow.FeedID,
-		UserID: 	feedFollow.UserID,
+	return FeedFollow{
+		ID:        feedFollow.ID,
+		CreatedAt: feedFollow.CreatedAt,
+		UpdatedAt: feedFollow.UpdatedAt,
+		FeedID:    feedFollow.FeedID,
+		UserID:    feedFollow.UserID,
 	}
 }
 
 type FeedAndFeedFollow struct {
-	Feed Feed `json:"feed"`
+	Feed       Feed       `json:"feed"`
 	FeedFollow FeedFollow `json:"feed_follow"`
 }
-
 
 type RSSFeed struct {
 	Channel struct {
@@ -99,27 +95,26 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
-
 type Post struct {
-	ID          uuid.UUID		`json:"post_id"`
-	CreatedAt   time.Time		`json:"created_at"`
-	UpdatedAt   time.Time		`json:"updated_at"`
-	Title       string			`json:"title"`
-	Url         string			`json:"url"`
-	Description string			`json:"description"`
-	PublishedAt time.Time		`json:"published_at"`
-	FeedID      uuid.UUID		`json:"feed_id"`
+	ID          uuid.UUID `json:"post_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Title       string    `json:"title"`
+	Url         string    `json:"url"`
+	Description string    `json:"description"`
+	PublishedAt time.Time `json:"published_at"`
+	FeedID      uuid.UUID `json:"feed_id"`
 }
 
 func databasePostToPost(post database.Post) Post {
 	return Post{
-		ID: post.ID,
-		CreatedAt: post.CreatedAt,
-		UpdatedAt: post.UpdatedAt,
-		Title: post.Title,
-		Url: post.Url,
+		ID:          post.ID,
+		CreatedAt:   post.CreatedAt,
+		UpdatedAt:   post.UpdatedAt,
+		Title:       post.Title,
+		Url:         post.Url,
 		Description: post.Description.String,
 		PublishedAt: post.PublishedAt.Time,
-		FeedID: post.FeedID,
+		FeedID:      post.FeedID,
 	}
 }

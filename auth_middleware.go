@@ -5,7 +5,6 @@ import (
 
 	"github.com/ds1242/blog-aggregator.git/auth"
 	"github.com/ds1242/blog-aggregator.git/internal/database"
-
 )
 
 type authedHandler func(http.ResponseWriter, *http.Request, database.User)

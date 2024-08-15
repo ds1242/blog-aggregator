@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func startScraping(db *database.Queries, concurrency int, timeBetweenRequest time.Duration) {
 	log.Printf("Collecting feeds every %s on %v goroutines...", timeBetweenRequest, concurrency)
 	ticker := time.NewTicker(timeBetweenRequest)
@@ -33,7 +32,6 @@ func startScraping(db *database.Queries, concurrency int, timeBetweenRequest tim
 	}
 }
 
-
 func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 	defer wg.Done()
 	_, err := db.MarkFeedFetched(context.Background(), feed.ID)
@@ -42,13 +40,12 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		return
 	}
 
-	feedData, err :=  fetchRSSFeed(feed.Url)
+	feedData, err := fetchRSSFeed(feed.Url)
 	if err != nil {
 		log.Printf("Couldn't collect feed %s: %v", feed.Name, err)
 		return
 	}
-	
-	
+
 	log.Printf("Feed %s collected, %v posts found", feed.Name, len(feedData.Channel.Item))
 
 	for _, item := range feedData.Channel.Item {
@@ -90,14 +87,14 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		}
 
 		db.AddPost(context.Background(), database.AddPostParams{
-			ID: 			uuid.New(),
-			CreatedAt: 		time.Now().UTC(),
-			UpdatedAt: 		time.Now().UTC(),
-			Title: 			item.Title,
-			Url: 			item.Link,
-			Description: 	descriptionNullable,	
-			PublishedAt: 	publishedAtNullable,
-			FeedID: 		feed.ID,	
+			ID:          uuid.New(),
+			CreatedAt:   time.Now().UTC(),
+			UpdatedAt:   time.Now().UTC(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: descriptionNullable,
+			PublishedAt: publishedAtNullable,
+			FeedID:      feed.ID,
 		})
 	}
 
